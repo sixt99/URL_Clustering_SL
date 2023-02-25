@@ -33,7 +33,7 @@ class Leaders:
             # If the current pattern has no leader, create a new leader and assign it to a new cluster
             if not is_follower:
                 leaders_idxs.append(i)
-                labels[i] = len(leaders_idxs)
+                labels[i] = len(leaders_idxs) - 1
 
         # Return the cluster labels for each pattern
         return labels
