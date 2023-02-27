@@ -1,9 +1,20 @@
 import numpy as np
 
+# TODO DO I IMPLEMENT THIS
+# Define a function to compute the pairwise distance matrix between a ser of samples and itself
+def samples_distance_matrix_efficient(mat):
+    N = np.shape(mat)[0]
+    dist_matrix = np.zeros((N, N))
 
-# Define a function to compute the pairwise distance matrix between two sets of samples
-def samples_distance_matrix(A, B):
-    return np.sqrt(np.sum(np.square(A[:, np.newaxis] - B[np.newaxis]), axis=2))
+    # Compute the upper triangle of the distance matrix
+    rows, cols = np.triu_indices(N, k=1)
+    dist_matrix[rows, cols] = np.sqrt(np.sum(np.square(mat[rows] - mat[cols]), axis=1))
+
+    return dist_matrix
+
+# Define a function to compute the pairwise distance matrix between a ser of samples and itself
+def samples_distance_matrix(mat):
+    return np.sum(np.square(mat[:, np.newaxis] - mat[np.newaxis]), axis=2)
 
 
 # Define a function to find the argmin of a matrix, but only considering positive elements
@@ -35,7 +46,7 @@ class SL:
         labels = np.arange(np.shape(X)[0])
 
         # Compute the pairwise distance matrix between the samples
-        distance_matrix = samples_distance_matrix(X, X)
+        distance_matrix = samples_distance_matrix(X)
 
         # Perform single linkage clustering until the threshold distance is reached
         while True:
