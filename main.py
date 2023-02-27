@@ -1,24 +1,21 @@
-from sklearn.datasets import make_blobs
+from sklearn.datasets import make_blobs, make_moons
 import matplotlib.pyplot as plt
 
-from algorithms.clustering import Leaders
+from algorithms.leaders import Leaders
+from algorithms.SL import SL
 
 if __name__ == '__main__':
-    # Set the number of clusters and the number of features for the synthetic data
-    n_samples = 1000
-    n_features = 2
-    n_clusters = 3
 
     # Generate synthetic data using the make_blobs function
-    X, y = make_blobs(n_samples=n_samples, n_features=n_features, centers=n_clusters, random_state=42)
+    X, y = make_blobs(n_samples=1000, centers = 3)
 
     # Clusterize with our methods
-    leaders = Leaders(5)
-    y_pred = leaders.predict(X)
+    SL = SL(1)
+    y_pred = SL.predict(X)
 
     # Plot results
     plt.scatter(X[:, 0], X[:, 1], c=y_pred)
-    plt.title("Synthetic Data with {} Clusters".format(n_clusters))
+    plt.title("Synthetic Data")
     plt.xlabel("Feature 1")
     plt.ylabel("Feature 2")
     plt.show()
