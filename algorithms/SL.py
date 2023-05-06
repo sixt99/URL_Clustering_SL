@@ -1,7 +1,9 @@
 import numpy as np
 
+import time
+
 # TODO DO I IMPLEMENT THIS
-# Define a function to compute the pairwise distance matrix between a ser of samples and itself
+# Define a function to compute the pairwise distance matrix between a set of samples and itself
 def samples_distance_matrix_efficient(mat):
     N = np.shape(mat)[0]
     dist_matrix = np.zeros((N, N))
@@ -12,9 +14,10 @@ def samples_distance_matrix_efficient(mat):
 
     return dist_matrix
 
-# Define a function to compute the pairwise distance matrix between a ser of samples and itself
+
+# Define a function to compute the pairwise distance matrix between a set of samples and itself
 def samples_distance_matrix(mat):
-    return np.sum(np.square(mat[:, np.newaxis] - mat[np.newaxis]), axis=2)
+    return np.sqrt(np.sum(np.square(mat[:, np.newaxis] - mat[np.newaxis]), axis=2))
 
 
 # Define a function to find the argmin of a matrix, but only considering positive elements
@@ -38,18 +41,27 @@ def positive_argmin(mat):
 class SL:
     # Initialize the single linkage clustering object with a threshold distance
     def __init__(self, h):
+        self.X = None
         self.h = h  # Threshold distance for leader identification
 
+    def fit(self, X):
+        self.X = X
+
     # Perform single linkage clustering on a set of samples
-    def predict(self, X):
+    def predict(self):
+
+        start_time = time.time()
+
+
         # Initialize the cluster labels to be the indices of the samples
-        labels = np.arange(np.shape(X)[0])
+        labels = np.arange(np.shape(self.X)[0])
 
         # Compute the pairwise distance matrix between the samples
-        distance_matrix = samples_distance_matrix(X)
+        distance_matrix = samples_distance_matrix(self.X)
 
         # Perform single linkage clustering until the threshold distance is reached
         while True:
+
             # Find the minimum distance between any two samples
             min_dist = np.min(distance_matrix[distance_matrix > 0])
 
@@ -69,6 +81,12 @@ class SL:
             # Update the cluster labels
             labels[labels == min_idx[1]] = min_idx[0]
             labels[labels > min_idx[1]] -= 1
+
+        end_time = time.time()
+
+        elapsed_time = end_time - start_time
+
+        print('Time to train SL:', elapsed_time)
 
         # Return the final cluster labels
         return labels
