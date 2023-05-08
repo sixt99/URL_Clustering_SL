@@ -17,6 +17,7 @@ from sklearn.cluster import KMeans
 # import sklearn.decomposition.PCA
 
 if __name__ == '__main__':
+
     # Load dataset
     dataset = ['spiral', 'banana', 'dna', 'shuttle', 'blobs'][0]
     df = pd.read_csv(f'datasets/{dataset}/{dataset}.csv')
