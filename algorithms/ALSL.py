@@ -2,6 +2,7 @@ from algorithms.Leaders import Leaders
 from algorithms.SL import SL
 import numpy as np
 import time
+from math import factorial
 
 
 def distance_matrix(mat_a, mat_b):
@@ -24,35 +25,46 @@ class ALSL:
     def fit(self, X):
         self.X = X
 
-    def predict(self):
+    def predict(self, return_more=False):
 
         start_time = time.time()
 
         # Compute leaders on X
+        # print('Computing Leaders...')
         leads = Leaders(self.h / 2)
         leads.fit(self.X)
         labels, leaders_idxs = leads.predict(return_leaders=True)
         leaders = self.X[leaders_idxs]
 
-        print('Number of samples:', self.X.shape[0])
-        print('Number of leaders:', len(leaders))
+        percentage_leaders = len(leaders_idxs) / self.X.shape[0]
+
+        # print('Number of samples:', self.X.shape[0])
+        # print('Number of leaders:', len(leaders))
 
         # Compute clusters on the set of leaders
+        # print('Computing SL...')
         sl = SL(self.h)
         sl.fit(leaders)
         labels_lead = sl.predict()
         num_leader_clusters = len(np.unique(labels_lead))
 
-        print('Number of clusters of leaders:', num_leader_clusters)
+        # print('Number of clusters of leaders:', num_leader_clusters)
 
         leaders_partition = [leaders[labels_lead == i] for i in range(num_leader_clusters)]
 
+        # print('Computing merging process...')
         # Start merging process
         S = {}
+        iter = 1
         for i in range(num_leader_clusters):
+
+            Bli = leaders_partition[i]
+
             for j in range(i + 1, num_leader_clusters):
 
-                Bli = leaders_partition[i]
+                # print(f'iter: {iter}/{num_leader_clusters*(num_leader_clusters -1)/2}')
+                iter += 1
+
                 Blj = leaders_partition[j]
 
                 dist_mat = distance_matrix(Bli, Blj)
@@ -110,6 +122,9 @@ class ALSL:
 
         elapsed_time = end_time - start_time
 
-        print('Time to train ALSL:', elapsed_time)
+        # print('Time to predict ALSL:', elapsed_time)
+
+        if return_more:
+            return labels, elapsed_time, percentage_leaders
 
         return new_labels

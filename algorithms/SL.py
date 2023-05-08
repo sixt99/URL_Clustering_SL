@@ -2,18 +2,6 @@ import numpy as np
 
 import time
 
-# TODO DO I IMPLEMENT THIS
-# Define a function to compute the pairwise distance matrix between a set of samples and itself
-def samples_distance_matrix_efficient(mat):
-    N = np.shape(mat)[0]
-    dist_matrix = np.zeros((N, N))
-
-    # Compute the upper triangle of the distance matrix
-    rows, cols = np.triu_indices(N, k=1)
-    dist_matrix[rows, cols] = np.sqrt(np.sum(np.square(mat[rows] - mat[cols]), axis=1))
-
-    return dist_matrix
-
 
 # Define a function to compute the pairwise distance matrix between a set of samples and itself
 def samples_distance_matrix(mat):
@@ -48,10 +36,9 @@ class SL:
         self.X = X
 
     # Perform single linkage clustering on a set of samples
-    def predict(self):
+    def predict(self, return_time=False):
 
         start_time = time.time()
-
 
         # Initialize the cluster labels to be the indices of the samples
         labels = np.arange(np.shape(self.X)[0])
@@ -61,6 +48,10 @@ class SL:
 
         # Perform single linkage clustering until the threshold distance is reached
         while True:
+
+            if not np.any(distance_matrix > 0):
+                print('SL came across a null distance matrix. Cannot move forward.')
+                exit()
 
             # Find the minimum distance between any two samples
             min_dist = np.min(distance_matrix[distance_matrix > 0])
@@ -86,7 +77,10 @@ class SL:
 
         elapsed_time = end_time - start_time
 
-        print('Time to train SL:', elapsed_time)
+        # print('Time to predict SL:', elapsed_time)
+
+        if return_time:
+            return labels, elapsed_time
 
         # Return the final cluster labels
         return labels

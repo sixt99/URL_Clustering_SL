@@ -1,5 +1,5 @@
 import numpy as np
-import time
+
 
 # Function to calculate the distance between two patterns
 def distance(x, y):
@@ -21,29 +21,24 @@ class Leaders:
 
     def predict(self, return_leaders=False):
 
-        start_time = time.time()
-
         # Initialize an array to hold cluster labels for each pattern
         labels = np.empty((np.shape(self.X)[0],))
         # Initialize a list to hold the indices of the leaders in the X array
-        leaders_idxs = []
+        leaders_idxs = np.empty(0, dtype=int)
 
         # Loop over each pattern in X
         for i, x in enumerate(self.X):
+            print(i)
 
-            # Compute the distance between the current pattern and all the leaders
-            distances = distance_matrix(x, self.X[leaders_idxs])
-            small_distances = np.where(distances <= self.tau)[0]
-            if len(distances) > 0 and len(small_distances) > 0:
-                labels[i] = small_distances[0]
+            arr = distance_matrix(x, self.X[leaders_idxs])
+            print(arr)
+            if leaders_idxs.size != 0 and np.min(arr) <= self.tau:
+                labels[i] = np.argmin(arr)
+
+            # If the current pattern has no leader, create a new leader and assign it to a new cluster
             else:
-                leaders_idxs.append(i)
+                leaders_idxs = np.concatenate((leaders_idxs, np.array([i])))
                 labels[i] = len(leaders_idxs) - 1
-
-        end_time = time.time()
-
-        print('Time to predict Leaders:', end_time - start_time)
-
 
         if return_leaders:
             # Return the cluster labels for each pattern and the index of each leader
